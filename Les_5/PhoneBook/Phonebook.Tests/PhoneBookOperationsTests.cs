@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NSubstitute;
 using Phonebook.Tests.TestDoubles;
 using PhoneBook;
 using System.Collections.Immutable;
@@ -11,22 +12,22 @@ namespace Phonebook.Tests
         public void Contacts_MetContactenInPhoneBook_GeeftAlleContactenTerug()
         {
             // Arrange
-            IPhoneBook phoneBookTestDouble = new PhoneBookTestDouble();
+            IPhoneBook phoneBookTestDouble = Substitute.For<IPhoneBook>();
             PhoneBookOperations sut = new PhoneBookOperations(phoneBookTestDouble);
-            List<Contact> expectedContacts = new List<Contact>() { new Contact(1, "Matthias", "Druwé", "0123456789") };
+            phoneBookTestDouble.Contacts.Returns(new List<Contact>() { new Contact(1, "Matthias", "Druwé", "0123456789") }.ToImmutableList()); 
 
             // Act
             ImmutableList<Contact> contacts = sut.Contacts;
 
             // Assert
-            contacts.Should().BeEquivalentTo(expectedContacts);
+            contacts.Should().BeEquivalentTo(phoneBookTestDouble);
         }
 
         [Fact]
         public void Favorites_ZonderFavorietenInContacten_GeeftLegeLijstTerug()
         {
             // Arrange
-            IPhoneBook phoneBookTestDouble = new PhoneBookTestDouble();
+            IPhoneBook phoneBookTestDouble = Substitute.For<IPhoneBook>();
             PhoneBookOperations sut = new PhoneBookOperations(phoneBookTestDouble);
 
             // Act
@@ -40,8 +41,8 @@ namespace Phonebook.Tests
         public void Favorites_MetFavorietenInContacten_GeeftLegeLijstTerug()
         {
             // Arrange
-            IPhoneBook phoneBookTestDouble = new PhoneBookTestDoubleWithFavorites();
-            PhoneBookOperations sut = new PhoneBookOperations(phoneBookTestDouble);
+            IPhoneBook phoneBookTestDouble = Substitute.For<IPhoneBook>();
+			PhoneBookOperations sut = new PhoneBookOperations(phoneBookTestDouble);
             List<Contact> expectedResult = new List<Contact>()
             {
                 new Contact(1,"John", "Doe", "123456789"){Favorite = true},
